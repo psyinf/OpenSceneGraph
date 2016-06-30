@@ -89,7 +89,7 @@ void trpgModel::SetName(const char *nm)
 
     if (nm)
     {
-        name = new char[(nm ? strlen(nm) : 0)+1];
+        name = new char[strlen(nm)+1];
         strcpy(name,nm);
     }
 }
@@ -111,7 +111,7 @@ bool trpgModel::isValid() const
 {
     if (type == External && !name)
     {
-        strcpy(errMess, "Model is external with no name");
+        errMess.assign("Model is external with no name");
         return false;
     }
 
@@ -218,9 +218,14 @@ bool trpgModel::GetType(int &t)
 }
 bool trpgModel::GetName(char *str,int strLen) const
 {
-    if (!isValid()) return false;
-    int len = (name ? strlen(name) : 0);
+    if (!isValid() || !name)
+    {
+        return false;
+    }
+
+    int len = strlen(name);
     strncpy(str,name,MIN(len,strLen)+1);
+
     return true;
 }
 bool trpgModel::GetNumTiles(int &ret) const
@@ -375,7 +380,7 @@ bool trpgModelTable::isValid() const
     for (  ; itr != modelsMap.end( ); itr++) {
         if(!itr->second.isValid()) {
             if(itr->second.getErrMess())
-                strcpy(errMess, itr->second.getErrMess());
+                errMess.assign(itr->second.getErrMess());
             return false;
         }
     }

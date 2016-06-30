@@ -328,10 +328,6 @@ std::string ReaderWriterP3DXML::expandEnvVarsInFileName(const std::string& filen
             }
             start_pos = argument.find("${",end_pos);
         }
-        else
-        {
-            start_pos = std::string::npos;
-        }
     }
 
     return argument;
@@ -2818,7 +2814,8 @@ class MyReadFileCallback : public virtual osgDB::ReadFileCallback
                     OSG_INFO<<"   inserting object into file cache "<<filename<<", "<<result.getObject()<<std::endl;
                     _objectCache[filename] = result.getObject();
 
-                    options->setPluginStringData("filename",newpath);
+                    if (options) options->setPluginStringData("filename",newpath);
+
                     return result;
                 }
             }

@@ -161,8 +161,7 @@ load_md2 (const char *filename, const osgDB::ReaderWriter::Options* options)
     }
 
     file_fd = open (filename, O_RDONLY);
-    if (file_fd <= 0) {
-        close (file_fd);
+    if (file_fd < 0) {
         return NULL;
     }
 
@@ -317,7 +316,7 @@ load_md2 (const char *filename, const osgDB::ReaderWriter::Options* options)
         int last_len = last_frame_name ? strcspn (last_frame_name, "0123456789") : 0;
         int cur_len = strcspn (frame->name, "0123456789");
 
-        if (last_len != cur_len || strncmp (last_frame_name, frame->name, last_len) != 0) {
+        if (last_len != cur_len || (last_frame_name && strncmp (last_frame_name, frame->name, last_len) != 0)) {
             if (current_sequence) {
                 current_sequence->setInterval (osg::Sequence::LOOP, 0, -1);
                 base_switch->addChild (current_sequence);

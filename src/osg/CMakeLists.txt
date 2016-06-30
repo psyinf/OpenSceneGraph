@@ -66,6 +66,7 @@ SET(TARGET_H
     ${HEADER_PATH}/CullStack
     ${HEADER_PATH}/DeleteHandler
     ${HEADER_PATH}/Depth
+    ${HEADER_PATH}/DepthRangeIndexed
     ${HEADER_PATH}/DisplaySettings
     ${HEADER_PATH}/Drawable
     ${HEADER_PATH}/DrawPixels
@@ -146,6 +147,7 @@ SET(TARGET_H
     ${HEADER_PATH}/RenderInfo
     ${HEADER_PATH}/SampleMaski
     ${HEADER_PATH}/Scissor
+    ${HEADER_PATH}/ScissorIndexed
     ${HEADER_PATH}/ScriptEngine
     ${HEADER_PATH}/Sequence
     ${HEADER_PATH}/ShadeModel
@@ -222,6 +224,7 @@ SET(TARGET_H
     ${HEADER_PATH}/VertexProgram
     ${HEADER_PATH}/View
     ${HEADER_PATH}/Viewport
+    ${HEADER_PATH}/ViewportIndexed
     ${OPENSCENEGRAPH_VERSION_HEADER}
     ${OPENSCENEGRAPH_CONFIG_HEADER}
     ${OPENSCENEGRAPH_OPENGL_HEADER}
@@ -273,6 +276,7 @@ SET(TARGET_SRC
     CullStack.cpp
     DeleteHandler.cpp
     Depth.cpp
+    DepthRangeIndexed.cpp
     DisplaySettings.cpp
     Drawable.cpp
     DrawPixels.cpp
@@ -345,6 +349,7 @@ SET(TARGET_SRC
     Referenced.cpp
     SampleMaski.cpp
     Scissor.cpp
+    ScissorIndexed.cpp
     ScriptEngine.cpp
     Sequence.cpp
     ShadeModel.cpp
@@ -388,6 +393,7 @@ SET(TARGET_SRC
     VertexProgram.cpp
     View.cpp
     Viewport.cpp
+    ViewportIndexed.cpp
 
     glu/libutil/error.cpp
     glu/libutil/mipmap.cpp

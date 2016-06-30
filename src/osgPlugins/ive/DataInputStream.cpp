@@ -159,8 +159,11 @@ DataInputStream::DataInputStream(std::istream* istream, const osgDB::ReaderWrite
         OSG_DEBUG << "ive::DataInputStream.setLoadExternalReferenceFiles()=" << getLoadExternalReferenceFiles() << std::endl;
     }
 
-    if(!istream){
+    if(!istream)
+    {
         throwException("DataInputStream::DataInputStream(): null pointer exception in argument.");
+        _version = 0;
+        return;
     }
 
     endianType = readUInt() ;
