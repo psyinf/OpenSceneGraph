@@ -172,7 +172,7 @@ load_md2 (const char *filename, const osgDB::ReaderWriter::Options* options)
         return NULL;
     }
 
-    if (read(file_fd, mapbase, st.st_size)==0)
+    if (read(file_fd, mapbase, st.st_size) != st.st_size)
     {
         close (file_fd);
         if (mapbase) free(mapbase);
@@ -374,8 +374,12 @@ load_md2 (const char *filename, const osgDB::ReaderWriter::Options* options)
         osg::ref_ptr<osg::Geode> geode = new osg::Geode;
         geode->addDrawable (geom.get());
 
-        current_sequence->addChild (geode.get());
-        current_sequence->setTime (sequence_frame, 0.2f);
+        if (current_sequence)
+        {
+            current_sequence->addChild (geode.get());
+            current_sequence->setTime (sequence_frame, 0.2f);
+        }
+
         sequence_frame++;
 
         last_frame_name = frame->name;
