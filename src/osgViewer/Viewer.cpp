@@ -238,7 +238,19 @@ Viewer::~Viewer()
         citr != contexts.end();
         ++citr)
     {
-        (*citr)->close();
+        osg::GraphicsContext* gc = *citr;
+
+        // Run destroy operation on each context before closing it
+        if (_cleanUpOperation.valid() && gc->valid())
+        {
+            gc->makeCurrent();
+
+            (*_cleanUpOperation)(gc);
+
+            gc->releaseContext();
+        }
+
+        gc->close();
     }
 
     //OSG_NOTICE<<"finish Viewer::~Viewer()"<<std::endl;
@@ -275,6 +287,7 @@ void Viewer::take(osg::View& rhs)
         _updateVisitor = rhs_viewer->_updateVisitor;
 
         _realizeOperation = rhs_viewer->_realizeOperation;
+        _cleanUpOperation = rhs_viewer->_cleanUpOperation;
         _currentContext = rhs_viewer->_currentContext;
 
 
@@ -287,6 +300,7 @@ void Viewer::take(osg::View& rhs)
         rhs_viewer->_updateOperations = 0;
         rhs_viewer->_updateVisitor = 0;
         rhs_viewer->_realizeOperation = 0;
+        rhs_viewer->_cleanUpOperation = 0;
         rhs_viewer->_currentContext = 0;
 
     }
@@ -364,6 +378,9 @@ bool Viewer::checkNeedToDoFrame()
 
     // check if the view needs to update the scene graph
     if (requiresUpdateSceneGraph()) return true;
+
+    // check if the view needs to be redraw
+    if (requiresRedraw()) return true;
 
     // check if events are available and need processing
     if (checkEvents()) return true;
