@@ -1,3 +1,5 @@
+/* -*-c++-*- OpenSceneGraph - Copyright (C) Sketchfab */
+
 #ifndef SUB_GEOMETRY
 #define SUB_GEOMETRY
 
@@ -48,12 +50,18 @@ public:
         // process morph targets if needed
         if(const osgAnimation::MorphGeometry* morphSource = dynamic_cast<const osgAnimation::MorphGeometry*>(&source)) {
             osgAnimation::MorphGeometry* morph = dynamic_cast<osgAnimation::MorphGeometry*>(_geometry.get());
-            const osgAnimation::MorphGeometry::MorphTargetList& morphTargetList = morphSource->getMorphTargetList();
-            for(osgAnimation::MorphGeometry::MorphTargetList::const_iterator targetSource = morphTargetList.begin() ;
-                targetSource != morphTargetList.end() ; ++ targetSource) {
-                osg::Geometry* target = new osg::Geometry;
-                addSourceBuffers(target, *targetSource->getGeometry());
-                morph->addMorphTarget(target, targetSource->getWeight());
+            if (morph)
+            {
+                const osgAnimation::MorphGeometry::MorphTargetList& morphTargetList = morphSource->getMorphTargetList();
+
+                osgAnimation::MorphGeometry::MorphTargetList::const_iterator targetSource;
+                for(targetSource = morphTargetList.begin() ; targetSource != morphTargetList.end() ; ++ targetSource) {
+                    if(targetSource->getGeometry()) {
+                        osg::Geometry* target = new osg::Geometry;
+                        addSourceBuffers(target, *targetSource->getGeometry());
+                        morph->addMorphTarget(target, targetSource->getWeight());
+                    }
+                }
             }
         }
 
@@ -156,9 +164,8 @@ protected:
     }
 
     inline osg::Array* makeVertexBuffer(const osg::Array* array, bool copyUserData=true) {
-        osg::Array* buffer = 0;
-        if(array) {
-            buffer = dynamic_cast<osg::Array*>(array->cloneType());
+        osg::Array* buffer = array ? osg::cloneType(array) : 0;
+        if(buffer) {
             buffer->setBinding(osg::Array::BIND_PER_VERTEX);
             if(copyUserData && array->getUserDataContainer()) {
                 buffer->setUserDataContainer(osg::clone(array->getUserDataContainer(), osg::CopyOp::DEEP_COPY_ALL));
