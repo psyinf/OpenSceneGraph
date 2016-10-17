@@ -271,7 +271,8 @@ IF(WIN32 AND NOT ANDROID)
         OPTION(WIN32_USE_MP "Set to ON to build OpenSceneGraph with the /MP option (Visual Studio 2005 and above)." OFF)
         MARK_AS_ADVANCED(WIN32_USE_MP)
         IF(WIN32_USE_MP)
-            SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:AVX")
+            SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /Gm-")
         ENDIF(WIN32_USE_MP)
 
         # turn off various warnings
