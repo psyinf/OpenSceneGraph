@@ -68,6 +68,7 @@ IF(DYNAMIC_OPENSCENEGRAPH)
     ADD_SUBDIRECTORY(osggpx)
     ADD_SUBDIRECTORY(osggraphicscost)
     ADD_SUBDIRECTORY(osgmanipulator)
+    ADD_SUBDIRECTORY(osgimpostor)
     ADD_SUBDIRECTORY(osgmovie)
     ADD_SUBDIRECTORY(osgmultiplemovies)
     ADD_SUBDIRECTORY(osgmultiplerendertargets)
@@ -206,20 +207,6 @@ IF(DYNAMIC_OPENSCENEGRAPH)
         IF (${CMAKE_BUILD_TYPE} STREQUAL "Release")
             ADD_SUBDIRECTORY(osgviewerWX)
         ENDIF()
-    ENDIF()
-
-    IF   ( (QT4_FOUND OR Qt5Widgets_FOUND) AND NOT OSG_GLES1_AVAILABLE AND NOT OSG_GLES2_AVAILABLE AND NOT OSG_GL3_AVAILABLE)
-
-        IF ( QT4_FOUND OR Qt5Widgets_FOUND)
-            ADD_SUBDIRECTORY(osgviewerQt)
-            ADD_SUBDIRECTORY(osgqfont)
-        ENDIF()
-
-        IF ( (QT4_FOUND AND QT_QTWEBKIT_FOUND) OR Qt5WebKitWidgets_FOUND )
-            ADD_SUBDIRECTORY(osgQtWidgets)
-            ADD_SUBDIRECTORY(osgQtBrowser)
-        ENDIF()
-
     ENDIF()
 
     IF   (FLTK_FOUND AND FLTK_GL_LIBRARY)

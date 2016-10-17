@@ -10,7 +10,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * OpenSceneGraph Public License for more details.
 */
-#include <osg/ArrayDispatchers>
+#include <osg/AttributeDispatchers>
 #include <osg/State>
 #include <osg/Drawable>
 
@@ -141,10 +141,9 @@ public:
     AttributeDispatchList               _attributeDispatchList;
 };
 
-ArrayDispatchers::ArrayDispatchers():
+AttributeDispatchers::AttributeDispatchers():
     _initialized(false),
     _state(0),
-    _vertexDispatchers(0),
     _normalDispatchers(0),
     _colorDispatchers(0),
     _secondaryColorDispatchers(0),
@@ -154,20 +153,12 @@ ArrayDispatchers::ArrayDispatchers():
 
 }
 
-ArrayDispatchers::~ArrayDispatchers()
+AttributeDispatchers::~AttributeDispatchers()
 {
-    delete _vertexDispatchers;
     delete _normalDispatchers;
     delete _colorDispatchers;
     delete _secondaryColorDispatchers;
     delete _fogCoordDispatchers;
-
-    for(AttributeDispatchMapList::iterator itr = _texCoordDispatchers.begin();
-        itr != _texCoordDispatchers.end();
-        ++itr)
-    {
-        delete *itr;
-    }
 
     for(AttributeDispatchMapList::iterator itr = _vertexAttribDispatchers.begin();
         itr != _vertexAttribDispatchers.end();
@@ -177,18 +168,17 @@ ArrayDispatchers::~ArrayDispatchers()
     }
 }
 
-void ArrayDispatchers::setState(osg::State* state)
+void AttributeDispatchers::setState(osg::State* state)
 {
     _state = state;
 }
 
-void ArrayDispatchers::init()
+void AttributeDispatchers::init()
 {
     if (_initialized) return;
 
     _initialized = true;
 
-    _vertexDispatchers = new AttributeDispatchMap();
     _normalDispatchers = new AttributeDispatchMap();
     _colorDispatchers = new AttributeDispatchMap();
     _secondaryColorDispatchers  = new AttributeDispatchMap();
@@ -197,13 +187,6 @@ void ArrayDispatchers::init()
 
 #ifdef OSG_GL_VERTEX_FUNCS_AVAILABLE
     GLExtensions* extensions = _state->get<GLExtensions>();
-
-    #ifndef OSG_GLES1_AVAILABLE
-        _vertexDispatchers->assign<GLfloat>(Array::Vec2ArrayType, glVertex2fv, 2);
-        _vertexDispatchers->assign<GLfloat>(Array::Vec3ArrayType, glVertex3fv, 3);
-        _vertexDispatchers->assign<GLdouble>(Array::Vec2dArrayType, glVertex2dv, 2);
-        _vertexDispatchers->assign<GLdouble>(Array::Vec3dArrayType, glVertex3dv, 3);
-    #endif
 
     _normalDispatchers->assign<GLbyte>(Array::Vec3bArrayType, glNormal3bv, 3);
     _normalDispatchers->assign<GLshort>(Array::Vec3sArrayType, glNormal3sv, 3);
@@ -229,88 +212,42 @@ void ArrayDispatchers::init()
 //
 //  With inidices
 //
-AttributeDispatch* ArrayDispatchers::vertexDispatcher(Array* array)
-{
-    return _useVertexAttribAlias ?
-           vertexAttribDispatcher(_state->getVertexAlias()._location, array) :
-           _vertexDispatchers->dispatcher(array);
-}
 
-AttributeDispatch* ArrayDispatchers::normalDispatcher(Array* array)
+AttributeDispatch* AttributeDispatchers::normalDispatcher(Array* array)
 {
     return _useVertexAttribAlias ?
            vertexAttribDispatcher(_state->getNormalAlias()._location, array) :
            _normalDispatchers->dispatcher(array);
 }
 
-AttributeDispatch* ArrayDispatchers::colorDispatcher(Array* array)
+AttributeDispatch* AttributeDispatchers::colorDispatcher(Array* array)
 {
     return _useVertexAttribAlias ?
            vertexAttribDispatcher(_state->getColorAlias()._location, array) :
            _colorDispatchers->dispatcher(array);
 }
 
-AttributeDispatch* ArrayDispatchers::secondaryColorDispatcher(Array* array)
+AttributeDispatch* AttributeDispatchers::secondaryColorDispatcher(Array* array)
 {
     return _useVertexAttribAlias ?
            vertexAttribDispatcher(_state->getSecondaryColorAlias()._location, array) :
            _secondaryColorDispatchers->dispatcher(array);
 }
 
-AttributeDispatch* ArrayDispatchers::fogCoordDispatcher(Array* array)
+AttributeDispatch* AttributeDispatchers::fogCoordDispatcher(Array* array)
 {
     return _useVertexAttribAlias ?
            vertexAttribDispatcher(_state->getFogCoordAlias()._location, array) :
            _fogCoordDispatchers->dispatcher(array);
 }
 
-AttributeDispatch* ArrayDispatchers::texCoordDispatcher(unsigned int unit, Array* array)
-{
-    if (_useVertexAttribAlias) return vertexAttribDispatcher(_state->getTexCoordAliasList()[unit]._location, array);
-
-    if (unit>=_texCoordDispatchers.size()) assignTexCoordDispatchers(unit);
-    return _texCoordDispatchers[unit]->dispatcher(array);
-}
-
-AttributeDispatch* ArrayDispatchers::vertexAttribDispatcher(unsigned int unit, Array* array)
+AttributeDispatch* AttributeDispatchers::vertexAttribDispatcher(unsigned int unit, Array* array)
 {
     if (unit>=_vertexAttribDispatchers.size()) assignVertexAttribDispatchers(unit);
     return _vertexAttribDispatchers[unit]->dispatcher(array);
 }
 
-void ArrayDispatchers::assignTexCoordDispatchers(unsigned int unit)
-{
-    #if defined(OSG_GL_VERTEX_FUNCS_AVAILABLE) && !defined(OSG_GLES1_AVAILABLE)
-    GLExtensions* extensions = _state->get<GLExtensions>();
-    #endif
-
-    for(unsigned int i=_texCoordDispatchers.size(); i<=unit; ++i)
-    {
-        _texCoordDispatchers.push_back(new AttributeDispatchMap());
-        AttributeDispatchMap& texCoordDispatcher = *_texCoordDispatchers[i];
-        if (i==0)
-        {
-            #if defined(OSG_GL_VERTEX_FUNCS_AVAILABLE) && !defined(OSG_GLES1_AVAILABLE)
-            texCoordDispatcher.assign<GLfloat>(Array::FloatArrayType, glTexCoord1fv, 1);
-            texCoordDispatcher.assign<GLfloat>(Array::Vec2ArrayType, glTexCoord2fv, 2);
-            texCoordDispatcher.assign<GLfloat>(Array::Vec3ArrayType, glTexCoord3fv, 3);
-            texCoordDispatcher.assign<GLfloat>(Array::Vec4ArrayType, glTexCoord4fv, 4);
-            #endif
-        }
-        else
-        {
-            #if defined(OSG_GL_VERTEX_FUNCS_AVAILABLE) && !defined(OSG_GLES1_AVAILABLE)
-            texCoordDispatcher.targetAssign<GLenum, GLfloat>((GLenum)(GL_TEXTURE0+i), Array::FloatArrayType, extensions->glMultiTexCoord1fv, 1);
-            texCoordDispatcher.targetAssign<GLenum, GLfloat>((GLenum)(GL_TEXTURE0+i), Array::Vec2ArrayType, extensions->glMultiTexCoord2fv, 2);
-            texCoordDispatcher.targetAssign<GLenum, GLfloat>((GLenum)(GL_TEXTURE0+i), Array::Vec3ArrayType, extensions->glMultiTexCoord3fv, 3);
-            texCoordDispatcher.targetAssign<GLenum, GLfloat>((GLenum)(GL_TEXTURE0+i), Array::Vec4ArrayType, extensions->glMultiTexCoord4fv, 4);
-            #endif
-        }
-    }
-
-}
-
-void ArrayDispatchers::assignVertexAttribDispatchers(unsigned int unit)
+void AttributeDispatchers::assignVertexAttribDispatchers(unsigned int unit)
 {
     GLExtensions* extensions = _state->get<GLExtensions>();
 
@@ -325,18 +262,13 @@ void ArrayDispatchers::assignVertexAttribDispatchers(unsigned int unit)
     }
 }
 
-void ArrayDispatchers::reset()
+void AttributeDispatchers::reset()
 {
     if (!_initialized) init();
 
     _useVertexAttribAlias = false;
 
-    for(ActiveDispatchList::iterator itr = _activeDispatchList.begin();
-        itr != _activeDispatchList.end();
-        ++itr)
-    {
-        (*itr).clear();
-    }
+    _activeDispatchList.clear();
 }
 
 }

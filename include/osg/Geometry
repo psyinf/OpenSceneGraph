@@ -140,8 +140,8 @@ class OSG_EXPORT Geometry : public Drawable
             method to use OpenGL vertex buffer objects for rendering.*/
         virtual void setUseVertexBufferObjects(bool flag);
 
-        /** Force a recompile on next draw() of any OpenGL display list associated with this geoset.*/
-        virtual void dirtyDisplayList();
+        /** Force a recompile on next draw() of any OpenGL objects associated with this geoset.*/
+        virtual void dirtyGLObjects();
 
 
         /** Resize any per context GLObject buffers to specified size. */
@@ -176,11 +176,13 @@ class OSG_EXPORT Geometry : public Drawable
         */
         virtual void drawImplementation(RenderInfo& renderInfo) const;
 
+
         /** Set up the vertex arrays for the purpose of rendering, called by drawImplemtation() prior to it calling drawPrimitivesImplementation().*/
         void drawVertexArraysImplementation(RenderInfo& renderInfo) const;
 
         /** dispatch the primitives to OpenGL, called by drawImplemtation() after calling drawVertexArraysImplementation().*/
         void drawPrimitivesImplementation(RenderInfo& renderInfo) const;
+
 
         /** Return true, osg::Geometry does support accept(Drawable::AttributeFunctor&). */
         virtual bool supports(const Drawable::AttributeFunctor&) const { return true; }
@@ -217,7 +219,6 @@ class OSG_EXPORT Geometry : public Drawable
         void addVertexBufferObjectIfRequired(osg::Array* array);
         void addElementBufferObjectIfRequired(osg::PrimitiveSet* primitiveSet);
 
-
         PrimitiveSetList                _primitives;
         osg::ref_ptr<Array>             _vertexArray;
         osg::ref_ptr<Array>             _normalArray;
@@ -228,6 +229,8 @@ class OSG_EXPORT Geometry : public Drawable
         ArrayList                       _vertexAttribList;
 
         bool                            _containsDeprecatedData;
+
+        virtual VertexArrayState* createVertexArrayState(RenderInfo& renderInfo) const;
 
     public:
 
