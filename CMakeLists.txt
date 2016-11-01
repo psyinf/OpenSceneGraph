@@ -279,7 +279,10 @@ IF(WIN32 AND NOT ANDROID)
         # foreach(warning 4244 4251 4267 4275 4290 4786 4305 4996)
         #     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd${warning}")
         # endforeach(warning)
-
+		ADD_DEFINITIONS( "/wd4456" ) #hidden definitions
+		ADD_DEFINITIONS( "/wd4457" ) #hidden function parameter definitions
+		ADD_DEFINITIONS( "/wd4458" ) #hidden member definitions
+		
         # This option is to enable the /DYNAMICBASE switch
         # It is used to workaround a bug in Windows 7 when linking in release, which results in corrupt
         # binaries. See this page for details: http://www.wintellect.com/CS/blogs/jrobbins/archive/2009/01/24/the-case-of-the-corrupt-pe-binaries.aspx
