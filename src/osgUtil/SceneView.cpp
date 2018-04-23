@@ -743,7 +743,7 @@ void SceneView::cull()
             _cullVisitorRight->setClampProjectionMatrixCallback(_cullVisitor->getClampProjectionMatrixCallback());
             _cullVisitorRight->setTraversalMask(_cullMaskRight);
             computeRightEyeViewport(getViewport());
-            computeNearFar = cullStage(computeRightEyeProjection(getProjectionMatrix()),computeRightEyeView(getViewMatrix()),_cullVisitorRight.get(),_stateGraphRight.get(),_renderStageRight.get(),_viewportRight.get());
+            computeNearFar = cullStage(computeRightEyeProjection(getProjectionMatrix()),computeRightEyeView(getViewMatrix()),_cullVisitorRight.get(),_stateGraphRight.get(),_renderStageRight.get(),_viewportRight.get()) | computeNearFar;
 
             if (computeNearFar)
             {
@@ -1232,7 +1232,7 @@ void SceneView::draw()
         case(osg::DisplaySettings::HORIZONTAL_INTERLACE):
         case(osg::DisplaySettings::CHECKERBOARD):
             {
-            #if !defined(OSG_GLES1_AVAILABLE) && !defined(OSG_GLES2_AVAILABLE) && !defined(OSG_GL3_AVAILABLE)
+            #if !defined(OSG_GLES1_AVAILABLE) && !defined(OSG_GLES2_AVAILABLE) && !defined(OSG_GLES3_AVAILABLE) && !defined(OSG_GLES3_AVAILABLE) && !defined(OSG_GL3_AVAILABLE)
                 if( 0 == ( _camera->getInheritanceMask() & DRAW_BUFFER) )
                 {
                     _renderStageLeft->setDrawBuffer(_camera->getDrawBuffer());

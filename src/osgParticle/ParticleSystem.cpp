@@ -146,8 +146,8 @@ void osgParticle::ParticleSystem::update(double dt, osg::NodeVisitor& nv)
 
         if (_dirty_uniforms)
         {
-            osg::Uniform* u_vd = stateset->getUniform("visibilityDistance");
-            if (u_vd) u_vd->set((float)_visibilityDistance);
+            osg::FloatUniform* u_vd = stateset->getOrCreateUniform<osg::FloatUniform>("visibilityDistance");
+            if (u_vd) u_vd->setValue(_visibilityDistance);
             _dirty_uniforms = false;
         }
     }
@@ -460,7 +460,7 @@ void osgParticle::ParticleSystem::drawImplementation(osg::RenderInfo& renderInfo
     }
 
     // set up depth mask for first rendering pass
-#if !defined(OSG_GLES1_AVAILABLE) && !defined(OSG_GLES2_AVAILABLE) && !defined(OSG_GL3_AVAILABLE)
+#if !defined(OSG_GLES1_AVAILABLE) && !defined(OSG_GLES2_AVAILABLE) && !defined(OSG_GLES3_AVAILABLE) && !defined(OSG_GL3_AVAILABLE)
     glPushAttrib(GL_DEPTH_BUFFER_BIT);
 #endif
 
@@ -469,7 +469,7 @@ void osgParticle::ParticleSystem::drawImplementation(osg::RenderInfo& renderInfo
     ad.dispatchArrays(state);
     ad.dispatchPrimitives();
 
-#if !defined(OSG_GLES1_AVAILABLE) && !defined(OSG_GLES2_AVAILABLE) && !defined(OSG_GL3_AVAILABLE)
+#if !defined(OSG_GLES1_AVAILABLE) && !defined(OSG_GLES2_AVAILABLE) && !defined(OSG_GLES3_AVAILABLE) && !defined(OSG_GL3_AVAILABLE)
     // restore depth mask settings
     glPopAttrib();
 #endif
@@ -478,14 +478,14 @@ void osgParticle::ParticleSystem::drawImplementation(osg::RenderInfo& renderInfo
     if (_doublepass)
     {
         // set up color mask for second rendering pass
-#if !defined(OSG_GLES1_AVAILABLE) && !defined(OSG_GLES2_AVAILABLE) && !defined(OSG_GL3_AVAILABLE)
+#if !defined(OSG_GLES1_AVAILABLE) && !defined(OSG_GLES2_AVAILABLE) && !defined(OSG_GLES3_AVAILABLE) && !defined(OSG_GL3_AVAILABLE)
         glPushAttrib(GL_COLOR_BUFFER_BIT);
 #endif
         glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
         ad.dispatchPrimitives();
 
-#if !defined(OSG_GLES1_AVAILABLE) && !defined(OSG_GLES2_AVAILABLE) && !defined(OSG_GL3_AVAILABLE)
+#if !defined(OSG_GLES1_AVAILABLE) && !defined(OSG_GLES2_AVAILABLE) && !defined(OSG_GLES3_AVAILABLE) && !defined(OSG_GL3_AVAILABLE)
         // restore color mask settings
         glPopAttrib();
 #endif
@@ -613,8 +613,8 @@ void osgParticle::ParticleSystem::setDefaultAttributesUsingShaders(const std::st
 #endif
     stateset->setAttributeAndModes(program, osg::StateAttribute::ON);
 
-    stateset->addUniform(new osg::Uniform("visibilityDistance", (float)_visibilityDistance));
-    stateset->addUniform(new osg::Uniform("baseTexture", texture_unit));
+    stateset->addUniform(new osg::FloatUniform("visibilityDistance", _visibilityDistance));
+    stateset->addUniform(new osg::IntUniform("baseTexture", texture_unit));
     setStateSet(stateset);
 
     setUseVertexArray(true);
@@ -657,7 +657,7 @@ void osgParticle::ParticleSystem::releaseGLObjects(osg::State* state) const
     }
 }
 
-osg::VertexArrayState* osgParticle::ParticleSystem::createVertexArrayState(osg::RenderInfo& renderInfo) const
+osg::VertexArrayState* osgParticle::ParticleSystem::createVertexArrayStateImplemenation(osg::RenderInfo& renderInfo) const
 {
     osg::State& state = *renderInfo.getState();
 

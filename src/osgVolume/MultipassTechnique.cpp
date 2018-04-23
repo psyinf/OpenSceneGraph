@@ -497,6 +497,7 @@ void MultipassTechnique::init()
     {
         geometryMatrix = masterLocator->getTransform();
         _transform->setMatrix(geometryMatrix);
+        masterLocator->applyAppropriateFrontFace(_transform->getOrCreateStateSet());
         masterLocator->addCallback(new TransformLocatorCallback(_transform.get()));
     }
 
@@ -669,7 +670,7 @@ void MultipassTechnique::init()
     osg::ref_ptr<osg::Shader> main_vertexShader = osgDB::readRefShaderFile(osg::Shader::VERTEX, "shaders/volume_multipass.vert");
     if (!main_vertexShader)
     {
-        #include "Shaders/volume_multipass_vert.cpp"
+        #include "shaders/volume_multipass_vert.cpp"
         main_vertexShader = new osg::Shader(osg::Shader::VERTEX, volume_multipass_vert);
     }
 
@@ -678,7 +679,7 @@ void MultipassTechnique::init()
     osg::ref_ptr<osg::Shader> computeRayColorShader = osgDB::readRefShaderFile(osg::Shader::FRAGMENT, "shaders/volume_compute_ray_color.frag");
     if (!computeRayColorShader)
     {
-        #include "Shaders/volume_compute_ray_color_frag.cpp"
+        #include "shaders/volume_compute_ray_color_frag.cpp"
         computeRayColorShader = new osg::Shader(osg::Shader::FRAGMENT, volume_compute_ray_color_frag);
     }
 
@@ -690,7 +691,7 @@ void MultipassTechnique::init()
     osg::ref_ptr<osg::Shader> cube_main_fragmentShader = osgDB::readRefShaderFile(osg::Shader::FRAGMENT, "shaders/volume_multipass_cube.frag");;
     if (!cube_main_fragmentShader)
     {
-        #include "Shaders/volume_multipass_cube_frag.cpp"
+        #include "shaders/volume_multipass_cube_frag.cpp"
         cube_main_fragmentShader = new osg::Shader(osg::Shader::FRAGMENT, volume_multipass_cube_frag);
     }
     osg::ref_ptr<osg::StateSet> cube_stateset_prototype = new osg::StateSet;
@@ -708,7 +709,7 @@ void MultipassTechnique::init()
     osg::ref_ptr<osg::Shader> hull_main_fragmentShader = osgDB::readRefShaderFile(osg::Shader::FRAGMENT, "shaders/volume_multipass_hull.frag");;
     if (!hull_main_fragmentShader)
     {
-        #include "Shaders/volume_multipass_hull_frag.cpp"
+        #include "shaders/volume_multipass_hull_frag.cpp"
         hull_main_fragmentShader = new osg::Shader(osg::Shader::FRAGMENT, volume_multipass_hull_frag);
     }
     osg::ref_ptr<osg::StateSet> hull_stateset_prototype = new osg::StateSet;
@@ -727,7 +728,7 @@ void MultipassTechnique::init()
     osg::ref_ptr<osg::Shader> cube_and_hull_main_fragmentShader = osgDB::readRefShaderFile(osg::Shader::FRAGMENT, "shaders/volume_multipass_cube_and_hull.frag");;
     if (!cube_and_hull_main_fragmentShader)
     {
-        #include "Shaders/volume_multipass_cube_and_hull_frag.cpp"
+        #include "shaders/volume_multipass_cube_and_hull_frag.cpp"
         cube_and_hull_main_fragmentShader = new osg::Shader(osg::Shader::FRAGMENT, volume_multipass_cube_and_hull_frag);
     }
     osg::ref_ptr<osg::StateSet> cube_and_hull_stateset_prototype = new osg::StateSet;
@@ -763,7 +764,7 @@ void MultipassTechnique::init()
             osg::ref_ptr<osg::Shader> accumulateSamplesShader = osgDB::readRefShaderFile(osg::Shader::FRAGMENT, "shaders/volume_accumulateSamples_standard.frag");
             if (!accumulateSamplesShader)
             {
-                #include "Shaders/volume_accumulateSamples_standard_frag.cpp"
+                #include "shaders/volume_accumulateSamples_standard_frag.cpp"
                 accumulateSamplesShader = new osg::Shader(osg::Shader::FRAGMENT, volume_accumulateSamples_standard_frag);
             }
 
@@ -778,7 +779,7 @@ void MultipassTechnique::init()
             osg::ref_ptr<osg::Shader> accumulateSamplesShader = osgDB::readRefShaderFile(osg::Shader::FRAGMENT, "shaders/volume_accumulateSamples_standard_tf.frag");
             if (!accumulateSamplesShader)
             {
-                #include "Shaders/volume_accumulateSamples_standard_tf_frag.cpp"
+                #include "shaders/volume_accumulateSamples_standard_tf_frag.cpp"
                 accumulateSamplesShader = new osg::Shader(osg::Shader::FRAGMENT, volume_accumulateSamples_standard_tf_frag);
             }
 
@@ -796,7 +797,7 @@ void MultipassTechnique::init()
             osg::ref_ptr<osg::Shader> accumulateSamplesShader = osgDB::readRefShaderFile(osg::Shader::FRAGMENT, "shaders/volume_accumulateSamples_iso.frag");
             if (!accumulateSamplesShader)
             {
-                #include "Shaders/volume_accumulateSamples_iso_frag.cpp"
+                #include "shaders/volume_accumulateSamples_iso_frag.cpp"
                 accumulateSamplesShader = new osg::Shader(osg::Shader::FRAGMENT, volume_accumulateSamples_iso_frag);
             }
 
@@ -811,7 +812,7 @@ void MultipassTechnique::init()
             osg::ref_ptr<osg::Shader> accumulateSamplesShader = osgDB::readRefShaderFile(osg::Shader::FRAGMENT, "shaders/volume_accumulateSamples_iso_tf.frag");
             if (!accumulateSamplesShader)
             {
-                #include "Shaders/volume_accumulateSamples_iso_tf_frag.cpp"
+                #include "shaders/volume_accumulateSamples_iso_tf_frag.cpp"
                 accumulateSamplesShader = new osg::Shader(osg::Shader::FRAGMENT, volume_accumulateSamples_iso_tf_frag);
             }
 
@@ -829,7 +830,7 @@ void MultipassTechnique::init()
             osg::ref_ptr<osg::Shader> accumulateSamplesShader = osgDB::readRefShaderFile(osg::Shader::FRAGMENT, "shaders/volume_accumulateSamples_mip.frag");
             if (!accumulateSamplesShader)
             {
-                #include "Shaders/volume_accumulateSamples_mip_frag.cpp"
+                #include "shaders/volume_accumulateSamples_mip_frag.cpp"
                 accumulateSamplesShader = new osg::Shader(osg::Shader::FRAGMENT, volume_accumulateSamples_mip_frag);
             }
 
@@ -844,7 +845,7 @@ void MultipassTechnique::init()
             osg::ref_ptr<osg::Shader> accumulateSamplesShader = osgDB::readRefShaderFile(osg::Shader::FRAGMENT, "shaders/volume_accumulateSamples_mip_tf.frag");
             if (!accumulateSamplesShader)
             {
-                #include "Shaders/volume_accumulateSamples_mip_tf_frag.cpp"
+                #include "shaders/volume_accumulateSamples_mip_tf_frag.cpp"
                 accumulateSamplesShader = new osg::Shader(osg::Shader::FRAGMENT, volume_accumulateSamples_mip_tf_frag);
             }
 
@@ -862,7 +863,7 @@ void MultipassTechnique::init()
             osg::ref_ptr<osg::Shader> accumulateSamplesShader = osgDB::readRefShaderFile(osg::Shader::FRAGMENT, "shaders/volume_accumulateSamples_lit.frag");
             if (!accumulateSamplesShader)
             {
-                #include "Shaders/volume_accumulateSamples_lit_frag.cpp"
+                #include "shaders/volume_accumulateSamples_lit_frag.cpp"
                 accumulateSamplesShader = new osg::Shader(osg::Shader::FRAGMENT, volume_accumulateSamples_lit_frag);
             }
 
@@ -877,7 +878,7 @@ void MultipassTechnique::init()
             osg::ref_ptr<osg::Shader> accumulateSamplesShader = osgDB::readRefShaderFile(osg::Shader::FRAGMENT, "shaders/volume_accumulateSamples_lit_tf.frag");
             if (!accumulateSamplesShader)
             {
-                #include "Shaders/volume_accumulateSamples_lit_tf_frag.cpp"
+                #include "shaders/volume_accumulateSamples_lit_tf_frag.cpp"
                 accumulateSamplesShader = new osg::Shader(osg::Shader::FRAGMENT, volume_accumulateSamples_lit_tf_frag);
             }
 
@@ -926,33 +927,6 @@ void MultipassTechnique::backfaceSubgraphCullTraversal(osgUtil::CullVisitor* cv)
 
     cv->popStateSet();
 }
-
-class RTTBackfaceCameraCullCallback : public osg::NodeCallback
-{
-    public:
-
-        RTTBackfaceCameraCullCallback(MultipassTechnique::MultipassTileData* tileData, MultipassTechnique* mt):
-            _tileData(tileData),
-            _mt(mt) {}
-
-        virtual void operator()(osg::Node* /*node*/, osg::NodeVisitor* nv)
-        {
-            osgUtil::CullVisitor* cv = nv->asCullVisitor();
-
-            cv->pushProjectionMatrix(_tileData->projectionMatrix.get());
-
-            _mt->backfaceSubgraphCullTraversal(cv);
-
-            cv->popProjectionMatrix();
-        }
-
-    protected:
-
-        virtual ~RTTBackfaceCameraCullCallback() {}
-
-        osg::observer_ptr<osgVolume::MultipassTechnique::MultipassTileData> _tileData;
-        osg::observer_ptr<osgVolume::MultipassTechnique> _mt;
-};
 
 class ShadingModelVisitor : public osgVolume::PropertyVisitor
 {
